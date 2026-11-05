@@ -6,6 +6,8 @@ import jakarta.faces.model.SelectItem;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import org.example.hajarsamouh.jsf.llm.JsonAdapterPourGemini;
+import java.util.Arrays;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -75,6 +77,8 @@ public class Bb implements Serializable {
     @Inject
     private FacesContext facesContext;
 
+    @Inject
+    private JsonAdapterPourGemini jsonAdapter;
     /**
      * Obligatoire pour un bean CDI (classe gérée par CDI), s'il y a un autre constructeur.
      */
@@ -163,6 +167,26 @@ public class Bb implements Serializable {
             return null;
         }
 
+        // Au début de la conversation : on envoie le rôle système à jsonAdapter et on le verrouille.
+        if (this.conversation.isEmpty()) {
+            jsonAdapter.setSystemRole(this.roleSysteme);
+            this.roleSystemeChangeable = false;
+        }
+
+        try {
+            LlmInteraction interaction = jsonAdapter.envoyerRequete(question);
+            this.reponse = interaction.reponseExtraite();
+            this.texteRequeteJson = interaction.questionJson();
+            this.texteReponseJson = interaction.reponseJson();
+        } catch (Exception e) {
+            this.reponse = "Erreur : " + e.getMessage();
+            FacesMessage message =
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR,
+                            "Problème de connexion avec l'API du LLM",
+                            "Problème de connexion avec l'API du LLM" + e.getMessage() + "\n" + Arrays.toString(e.getStackTrace()));
+            facesContext.addMessage(null, message);
+        }
+
         // La conversation contient l'historique des questions-réponses depuis le début.
         afficherConversation();
         return null;
@@ -215,9 +239,19 @@ public class Bb implements Serializable {
                     are you tell them the average price of a meal.
                     """;
             this.listeRolesSysteme.add(new SelectItem(role, "Guide touristique"));
+
+            role = """
+                    Tu es un architecte logiciel senior spécialisé en développement d'applications intelligentes.
+                    Ton objectif est d'accompagner l'utilisateur dans la conception de solutions informatiques robustes.
+                    Tu dois : expliquer les choix techniques, identifier les problèmes d'architecture,
+                    comparer les solutions possibles, proposer des améliorations concrètes,
+                    structurer tes réponses en étapes et signaler les risques et les limites.
+                    Tu dois être pédagogique, rigoureux et critique.
+                    Ne valide jamais automatiquement une proposition technique sans l'avoir analysée.
+                    """;
+            this.listeRolesSysteme.add(new SelectItem(role, "Architecte logiciel pédagogique et critique"));
         }
 
         return this.listeRolesSysteme;
     }
-
 }
