@@ -1,6 +1,5 @@
 package org.example.hajarsamouh.jsf;
 
-import org.example.hajarsamouh.service.GenerateurReponse;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.faces.model.SelectItem;
@@ -52,10 +51,23 @@ public class Bb implements Serializable {
     private StringBuilder conversation = new StringBuilder();
 
     /**
+     * Mode debug : si true, le JSON des requêtes et réponses du LLM est affiché dans la page.
+     */
+    private boolean debug;
+
+    /**
+     * JSON de la requête envoyée au LLM (affiché en mode debug).
+     */
+    private String texteRequeteJson;
+
+    /**
+     * JSON de la réponse reçue du LLM (affiché en mode debug).
+     */
+    private String texteReponseJson;
+
+    /**
      * Service pour modifier la question et générer la réponse.
      */
-    @Inject
-    private GenerateurReponse generateurReponse;
 
     /**
      * Contexte JSF. Utilisé pour qu'un message d'erreur s'affiche dans le formulaire.
@@ -102,6 +114,30 @@ public class Bb implements Serializable {
         this.reponse = reponse;
     }
 
+    public boolean isDebug() {
+        return debug;
+    }
+
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
+
+    public String getTexteRequeteJson() {
+        return texteRequeteJson;
+    }
+
+    public void setTexteRequeteJson(String texteRequeteJson) {
+        this.texteRequeteJson = texteRequeteJson;
+    }
+
+    public String getTexteReponseJson() {
+        return texteReponseJson;
+    }
+
+    public void setTexteReponseJson(String texteReponseJson) {
+        this.texteReponseJson = texteReponseJson;
+    }
+
     public String getConversation() {
         return conversation.toString();
     }
@@ -126,13 +162,6 @@ public class Bb implements Serializable {
             facesContext.addMessage(null, message);
             return null;
         }
-
-        // Traite la question pour construire la réponse.
-        if (this.conversation.isEmpty()) { // Si la conversation n'a pas encore commencé
-            // Fige la liste déroulante qui permet de choisir le rôle système
-            this.roleSystemeChangeable = false;
-        }
-        this.reponse = this.generateurReponse.genererReponse(this.question, this.roleSysteme);
 
         // La conversation contient l'historique des questions-réponses depuis le début.
         afficherConversation();
