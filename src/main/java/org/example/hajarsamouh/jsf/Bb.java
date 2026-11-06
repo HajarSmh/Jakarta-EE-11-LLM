@@ -7,6 +7,7 @@ import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import org.example.hajarsamouh.jsf.llm.JsonAdapterPourGemini;
+import org.example.hajarsamouh.jsf.llm.LlmInteraction;
 import java.util.Arrays;
 
 import java.io.Serializable;
@@ -240,16 +241,6 @@ public class Bb implements Serializable {
                     """;
             this.listeRolesSysteme.add(new SelectItem(role, "Guide touristique"));
 
-            role = """
-                    Tu es un architecte logiciel senior spécialisé en développement d'applications intelligentes.
-                    Ton objectif est d'accompagner l'utilisateur dans la conception de solutions informatiques robustes.
-                    Tu dois : expliquer les choix techniques, identifier les problèmes d'architecture,
-                    comparer les solutions possibles, proposer des améliorations concrètes,
-                    structurer tes réponses en étapes et signaler les risques et les limites.
-                    Tu dois être pédagogique, rigoureux et critique.
-                    Ne valide jamais automatiquement une proposition technique sans l'avoir analysée.
-                    """;
-            this.listeRolesSysteme.add(new SelectItem(role, "Architecte logiciel pédagogique et critique"));
         }
 
         return this.listeRolesSysteme;

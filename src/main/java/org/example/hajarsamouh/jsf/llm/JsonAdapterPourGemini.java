@@ -7,9 +7,6 @@ import jakarta.json.stream.JsonGenerator;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import org.example.hajarsamouh.jsf.LlmInteraction;
-import org.example.hajarsamouh.jsf.RequeteException;
-
 import java.io.Serializable;
 import java.io.StringReader;
 import java.io.StringWriter;

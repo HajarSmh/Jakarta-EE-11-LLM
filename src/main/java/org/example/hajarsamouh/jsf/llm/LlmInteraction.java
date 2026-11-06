@@ -1,4 +1,4 @@
-package org.example.hajarsamouh.jsf;
+package org.example.hajarsamouh.jsf.llm;
 
 public record LlmInteraction(
         String questionJson,
